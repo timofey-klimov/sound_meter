@@ -1,0 +1,17 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Design.PreviewWith>
+	<StackPanel>
+		<Label Background="{StaticResource LightBlueBrush}">Test</Label>
+		<Label Background="{StaticResource MidBlueBrush}">Test</Label>
+		<Label Background="{StaticResource DarkBlueBrush}">Test</Label>
+		<Label Background="{StaticResource FadedRedBrush}">Test</Label>
+		<Label Background="{StaticResource MediumGreyBrush}">Test</Label>
+	</StackPanel>
+</Design.PreviewWith>
+	<SolidColorBrush x:Key="LightBlueBrush" Color="#606875"/>
+	<SolidColorBrush x:Key="MidBlueBrush" Color="#373c44"/>
+	<SolidColorBrush x:Key="DarkBlueBrush" Color="#1a1c20"/>
+	<SolidColorBrush x:Key="FadedRedBrush" Color="#bc7c7a"/>
+	<SolidColorBrush x:Key="MediumGreyBrush" Color="#e5e5e5"/>
+</ResourceDictionary>

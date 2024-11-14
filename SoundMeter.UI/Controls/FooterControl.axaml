@@ -1,0 +1,37 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:controls="using:SoundMeter.UI.Controls"
+		xmlns:vm="using:SoundMeter.UI.ViewModels">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+	<Style Selector="controls|FooterControl" x:DataType="vm:FooterViewModel">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid Margin="5" ColumnDefinitions="Auto, Auto, *, Auto, Auto, Auto, Auto, Auto">
+					<Button
+						FontSize="14"
+						Name="ConfigurationButton"
+						Grid.Column="0"
+						Margin="5"
+						Theme="{StaticResource DarkStyleButtonTheme}"
+						Command="{Binding ToggleChannelConfigurationCommand}"
+						controls:AnimatedPopup.WithName="AudioInterfaceSelectorPopup"
+						Content="{Binding SelectedAudioInterfaceButtonName}"
+				/>
+
+					<Button
+						Command="{Binding RefreshCommand}"
+						FontSize="14"
+						Grid.Column="1"
+						Theme="{StaticResource DarkStyleButtonTheme}">
+						Refresh
+					</Button>
+				</Grid>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+  <!-- Add Styles Here -->
+</Styles>

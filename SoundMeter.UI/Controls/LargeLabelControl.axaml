@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:SoundMeter.UI.Controls">
+
+  <!--
+    Additional resources 
+    Using Control Themes:
+         https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+    Using Theme Variants:
+         https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+  -->
+  
+  <Design.PreviewWith>
+    <Border Background="{DynamicResource DarkBlueBrush}">      
+        <StackPanel Background="{DynamicResource SystemRegionBrush}">
+          <controls:LargeLabelControl LargeText="-31 LUFS" SmallText="Text"/>
+          <controls:LargeLabelControl LargeText="-31 LUFS" SmallText="Text" Classes="button"/>
+        </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+ 
+  <ControlTheme x:Key="{x:Type controls:LargeLabelControl}" TargetType="controls:LargeLabelControl">
+	<Styles>
+		<Style Selector="controls|LargeLabelControl">
+			<Setter Property="Background" Value="{DynamicResource MidBlueBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+              <ControlTemplate>
+		          <Border Background="{TemplateBinding Background}" Padding="7,10">
+			          <StackPanel>
+				          <Label HorizontalAlignment="Center" FontSize="18" Padding="0,0" Content="{TemplateBinding LargeText}"/>
+				          <Label HorizontalAlignment="Center" FontSize="12" Padding="0,0" Content="{TemplateBinding SmallText}"/>
+			          </StackPanel>
+		          </Border>
+              </ControlTemplate>
+            </Setter>
+	    </Style>
+		<Style Selector="controls|LargeLabelControl.button">
+			<Setter Property="Background" Value="{DynamicResource MidBlueBrush}"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Template">
+				<ControlTemplate>
+						<StackPanel Margin="0,5">
+							<Label
+								CornerRadius="20"
+								Background="{TemplateBinding Background}" 
+								HorizontalAlignment="Center" 
+								FontSize="18" 
+								Padding="15,5" 
+								Content="{TemplateBinding LargeText}"/>
+							<Label HorizontalAlignment="Center" FontSize="12" Padding="0,0" Content="{TemplateBinding SmallText}"/>
+						</StackPanel>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+	</Styles>
+  </ControlTheme>
+</ResourceDictionary>
