@@ -32,6 +32,7 @@ namespace SoundMeter.UI.Controls
 
         public override void Render(DrawingContext context)
         {
+            _viewModel.UpdateActualHeight(_control.Bounds.Height);
             base.Render(context);
         }
     }

@@ -1,15 +1,16 @@
 ﻿using SoundMeter.Core.Models;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace SoundMeter.Core.Services
 {
     public struct InputDeviceStreamData
     {
-        public ArraySegment<byte> Data { get; }
+        public ArraySegment<float> Data { get; }
         public int SampleRate { get; }
 
-        public InputDeviceStreamData(ArraySegment<byte> data, int sampleRate)
+        public InputDeviceStreamData(ArraySegment<float> data, int sampleRate)
         {
             Data = data;
             SampleRate = sampleRate;
@@ -30,7 +31,7 @@ namespace SoundMeter.Core.Services
         private readonly Channel<InputDeviceStreamData> _channel;
         private readonly ISoundIoClient _soundIoClient;
         private SoundIOInStream? _currentStream;
-        private Lazy<ArrayPool<byte>> _arrayPoolFactory = new Lazy<ArrayPool<byte>>(() => ArrayPool<byte>.Shared);
+        private Lazy<ArrayPool<float>> _arrayPoolFactory = new Lazy<ArrayPool<float>>(() => ArrayPool<float>.Shared);
         private CancellationTokenSource? _cancellationTokenSource;
         public ChannelReader<InputDeviceStreamData> Processor => _channel.Reader;
 
@@ -42,6 +43,7 @@ namespace SoundMeter.Core.Services
 
         public async Task ListenAsync(int deviceId)
         {
+            _cancellationTokenSource?.Cancel();
             _currentStream?.Dispose();
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = new CancellationTokenSource();
@@ -73,32 +75,34 @@ namespace SoundMeter.Core.Services
                 int frame_count = frames_left;
 
                 var areas = _currentStream?.BeginRead(ref frame_count);
-
+                var bufferlength = frame_count / 2;
+                var buffer = _arrayPoolFactory.Value.Rent(bufferlength);
                 if (areas.HasValue && !areas.Value.IsEmpty)
                 {
-                    int copySize = _currentStream!.BytesPerSample;
+                    nint copySize = _currentStream!.BytesPerSample;
+                    uint counter = 0;
                     for (int frame = 0; frame < frame_count; frame += 1)
                     {
                         if (token.IsCancellationRequested)
                             break;
-
-                       
                         var area = areas.Value.GetArea(0);
-                        var buffer = _arrayPoolFactory.Value.Rent(copySize);
-                        fixed (byte* ptr = buffer)
+                        var data = Unsafe.ReadUnaligned<float>((void*)area.Pointer);
+                        if (data > 0)
+                        buffer[counter] = data;    
+                        area.Pointer += copySize;
+
+                        if (counter == bufferlength - 1)
                         {
-                            Buffer.MemoryCopy((void*)area.Pointer, ptr, copySize, copySize);
+                            counter = 0;
+                            _channel.Writer.WriteAsync(
+                                new InputDeviceStreamData(
+                                    new ArraySegment<float>(buffer, 0, bufferlength), sampleRate));
                         }
-
-                        var arraySegment = new ArraySegment<byte>(buffer, 0, copySize);
-                            
-                        _channel.Writer.WriteAsync(new InputDeviceStreamData(arraySegment, sampleRate));
-                        area.Pointer += area.Step;
-
-                        _arrayPoolFactory.Value.Return(buffer);
+                        counter++;
                     }
 
                     frames_left -= frame_count;
+                    _arrayPoolFactory.Value.Return(buffer);
                     _currentStream.EndRead();
                 }
             }

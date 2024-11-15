@@ -4,7 +4,6 @@ using SoundMeter.UI.Messages;
 using SoundMeter.UI.Models;
 using SoundMeter.UI.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,8 +19,6 @@ namespace SoundMeter.UI.ViewModels
         private readonly IInputDeviceMessageProcessor _messageProcessor;
         private readonly ILoudnesService _loudnesService;
         private ObservableCollection<AudioInterface> _audioInterfaces;
-        private Queue<double> _volumes = new Queue<double>();
-        private DispatcherTimer _timer;
 
         public ObservableCollection<AudioInterface> AudioInterfaces
         {
@@ -48,8 +45,6 @@ namespace SoundMeter.UI.ViewModels
 
         }
 
-        private readonly float[] _buffer = new float[128];
-
         public MainViewModel(
             IAudioInterfaceService audioInterfaceService, 
             IEventBus eventBus, 
@@ -69,14 +64,6 @@ namespace SoundMeter.UI.ViewModels
             });
             LoadAudioInterfaces();
             ProcessMessages();
-            _timer = new DispatcherTimer()
-            {
-                Interval = TimeSpan.FromSeconds(1 / 144)
-            };
-            _timer.Tick += (s, e) =>
-            {
-                Lufs = _volumes.Count > 5 ? _volumes.Average().ToString() : "0";
-            };
         }
 
         private async Task LoadAudioInterfaces(bool resetCache = false)
@@ -88,11 +75,11 @@ namespace SoundMeter.UI.ViewModels
         private void SelectAudioInterface(object audioInterface)
         {
             var castAudioInterface = (AudioInterface)audioInterface;
+            _eventBus.Publish(new SelectAudioIntefaceMessage(castAudioInterface));
             if (castAudioInterface.Index == _selectedAudioInterface?.Index)
                 return;
             _selectedAudioInterface = castAudioInterface;
-            _eventBus.Publish(new SelectAudioIntefaceMessage(_selectedAudioInterface.Value));
-            _listener.ListenAsync(_selectedAudioInterface.Value.Index).ContinueWith(x => _timer.Start());
+            _listener.ListenAsync(_selectedAudioInterface.Value.Index);
             
         }
 
@@ -100,21 +87,9 @@ namespace SoundMeter.UI.ViewModels
         {
             while (true)
             {
-                int rate = 0;
-                for (int i = 0; i < 128; i++)
-                {
-                    var message = await _messageProcessor.Processor.ReadAsync();
-                    float value = BitConverter.ToSingle(message.Data);
-                    _buffer[i] = value;
-                    if (i == 127)
-                        rate = message.SampleRate;
-                }
-                var lufs = _loudnesService.Calculate(_buffer, rate);
-                if (_volumes.Count < 70)
-                    _volumes.Enqueue(double.IsInfinity(lufs) ? -80.0 : lufs);
-                if (_volumes.Count > 25)
-                    _volumes.Dequeue();
-                await Dispatcher.UIThread.InvokeAsync(() => Lufs = lufs.ToString());
+                var message = await _messageProcessor.Processor.ReadAsync();
+                var lufs = _loudnesService.Calculate(message.Data, message.SampleRate);
+                _eventBus.Publish(new UpdateLufsMessage(lufs));
             }
         }
     }

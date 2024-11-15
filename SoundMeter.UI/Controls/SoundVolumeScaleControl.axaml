@@ -61,7 +61,7 @@
 							</Grid>
 							<!--Arrow-->
 								<Canvas Grid.Column="2" Width="15" x:Name="VolumeContainer">
-									<Path Fill="White" Data="M 20 3 L 4 10 L 20 17 Z" Canvas.Bottom="442"/>
+									<Path Fill="White" Data="M 20 3 L 4 10 L 20 17 Z" Canvas.Top="{Binding CurrentVolume}"/>
 								</Canvas>
 						</Grid>
 						<Grid Grid.Row="1" RowDefinitions="Auto, Auto" Margin="0,7,0,0">
