@@ -1,6 +1,7 @@
 ﻿using SoundMeter.UI.Messages;
 using SoundMeter.UI.Models;
 using SoundMeter.UI.Services;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SoundMeter.UI.ViewModels
@@ -26,12 +27,12 @@ namespace SoundMeter.UI.ViewModels
             _eventBus = eventBus;
             ToggleChannelConfigurationCommand = new Command(ToggleChannelConfiguration);
             RefreshCommand = new Command(Refresh);
-            _eventBus.On<SelectAudioIntefaceMessage>(this, OnAudioInterfaceSelected);
+            _eventBus.On<SelectAudioIntefaceMessage>(this, OnAudioInterfaceSelectedAsync);
         }
 
         private void ToggleChannelConfiguration(object x) => _popupStateManager.Open(PopupName);
-        private void Refresh(object o) => _eventBus.Publish(new RefreshDevicesMessage());
-        private void OnAudioInterfaceSelected(SelectAudioIntefaceMessage message)
+        private void Refresh(object o) => _eventBus.PublishAsync(new RefreshDevicesMessage());
+        private async Task OnAudioInterfaceSelectedAsync(SelectAudioIntefaceMessage message)
         {
             if (_selectedAudioInterface?.Index != message.AudioInterface.Index)
                 _selectedAudioInterface = message.AudioInterface;

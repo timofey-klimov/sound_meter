@@ -1,0 +1,26 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:controls="using:SoundMeter.UI.Controls"
+		xmlns:vm="using:SoundMeter.UI.ViewModels">
+  <Design.PreviewWith>
+    <Border Padding="20">
+      <!-- Add Controls for Previewer Here -->
+    </Border>
+  </Design.PreviewWith>
+
+
+	<Style Selector="controls|LoundesInfoControl" x:DataType="vm:LoundesInfoControlViewModel">
+		<Setter Property="Template">
+			<ControlTemplate>
+				<StackPanel Grid.Column="1" Width="170" Margin="0,20,0,0">
+					<controls:LargeLabelControl LargeText="{Binding Lufs}" SmallText="SHORT TERM"/>
+					<controls:LargeLabelControl LargeText="{Binding LoundesRange}" SmallText="LOUNDNESS RANGE"/>
+					<controls:LargeLabelControl LargeText="{Binding Lufs}" SmallText="AVG DYNAMICS"/>
+
+					<controls:LargeLabelControl Margin="0 15 0 0" Classes="button" LargeText="{Binding MomentaryMax}" SmallText="MOMENTARY MAX"/>
+					<controls:LargeLabelControl Margin="0 15 0 0" Classes="button" LargeText="{Binding ShortTermMax}" SmallText="SHORT TERM MAX"/>
+				</StackPanel>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+</Styles>

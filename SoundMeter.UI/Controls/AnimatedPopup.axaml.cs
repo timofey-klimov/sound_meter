@@ -87,8 +87,6 @@ namespace SoundMeter.UI.Controls
         }
         #endregion
 
-        private const double Frequency = 144.0;
-
         private Size _containerSize;
         private Size _previousContainerSize;
         private double _currentTick = 0.0;
@@ -99,7 +97,7 @@ namespace SoundMeter.UI.Controls
         private static Control _underLayControl;
 
         private double TotalTicks => Math.Ceiling(AnimationDuration.TotalSeconds / FrameRate.TotalSeconds);
-        private TimeSpan FrameRate => TimeSpan.FromSeconds(1.0 / Frequency);
+        private TimeSpan FrameRate => AppSettings.FrameRate;
 
         private static Dictionary<string, Control> _controlsRelatedTo = new();
 

@@ -1,9 +1,7 @@
-﻿using Avalonia.Threading;
-using SoundMeter.Core.Services;
+﻿using SoundMeter.Core.Services;
 using SoundMeter.UI.Messages;
 using SoundMeter.UI.Models;
 using SoundMeter.UI.Services;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,20 +28,8 @@ namespace SoundMeter.UI.ViewModels
             }
         }
 
-        public ICommand SelectAudioInterfaceCommand { get; }
         private AudioInterface? _selectedAudioInterface;
-
-        private string _lufs;
-        public string Lufs
-        {
-            get => _lufs;
-            set
-            {
-                _lufs = value;
-                RaiseEvent(nameof(Lufs));
-            }
-
-        }
+        public ICommand SelectAudioInterfaceCommand { get; }
 
         public MainViewModel(
             IAudioInterfaceService audioInterfaceService, 
@@ -58,9 +44,9 @@ namespace SoundMeter.UI.ViewModels
             _loudnesService = loundnesService;
             _eventBus = eventBus;
             SelectAudioInterfaceCommand = new Command(SelectAudioInterface);
-            _eventBus.On<RefreshDevicesMessage>(this, (m) =>
+            _eventBus.On<RefreshDevicesMessage>(this, async (m) =>
             {
-                LoadAudioInterfaces(true);
+                await LoadAudioInterfaces(true);
             });
             LoadAudioInterfaces();
             ProcessMessages();
@@ -75,12 +61,11 @@ namespace SoundMeter.UI.ViewModels
         private void SelectAudioInterface(object audioInterface)
         {
             var castAudioInterface = (AudioInterface)audioInterface;
-            _eventBus.Publish(new SelectAudioIntefaceMessage(castAudioInterface));
+            _eventBus.PublishAsync(new SelectAudioIntefaceMessage(castAudioInterface));
             if (castAudioInterface.Index == _selectedAudioInterface?.Index)
                 return;
             _selectedAudioInterface = castAudioInterface;
             _listener.ListenAsync(_selectedAudioInterface.Value.Index);
-            
         }
 
         private async Task ProcessMessages()
@@ -89,7 +74,7 @@ namespace SoundMeter.UI.ViewModels
             {
                 var message = await _messageProcessor.Processor.ReadAsync();
                 var lufs = _loudnesService.Calculate(message.Data, message.SampleRate);
-                _eventBus.Publish(new UpdateLufsMessage(lufs));
+                await _eventBus.PublishAsync(new UpdateLufsMessage(lufs));
             }
         }
     }

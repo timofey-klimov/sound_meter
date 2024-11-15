@@ -46,18 +46,7 @@
 			<!--Volume Bar-->
 			<controls:SoundVolumeScaleControl Grid.Column="0"/>
 			<!--Info Bar-->
-			<StackPanel Grid.Column="1" Width="170" Margin="0,20,0,0">
-				<controls:LargeLabelControl LargeText="{Binding Lufs}" SmallText="SHORT TERM"/>
-				<controls:LargeLabelControl LargeText="-20 LUFS" SmallText="INTEGRATED" Background="{DynamicResource LightBlueBrush}"/>
-				<controls:LargeLabelControl LargeText="8.4 LU" SmallText="LOUNDNESS RANGE"/>
-				<controls:LargeLabelControl LargeText="21.2 LU" SmallText="REAL TIME DYNAMICS"/>
-				<controls:LargeLabelControl LargeText="21.2 LU" SmallText="AVG DYNAMICS"/>
-				
-				<controls:LargeLabelControl Classes="button" LargeText="-9.8 LUFS" SmallText="MOMENTARY MAX" Margin="0,7,0,0"/>
-				<controls:LargeLabelControl Classes="button" LargeText="-15.1 LUFS" SmallText="SHORT TERM MAX"/>
-				<controls:LargeLabelControl Classes="button" LargeText="0.7 dB" SmallText="TRUE PEAK MAX"/>
-				
-			</StackPanel>
+			<controls:LoundesInfoControl Grid.Column="1"/>
 			<Grid Grid.Column="2">
 				
 			</Grid>

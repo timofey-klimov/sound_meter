@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SoundMeter.UI.Services
 {
@@ -11,17 +12,17 @@ namespace SoundMeter.UI.Services
 
     internal interface IEventBus
     {
-        IDisposable On<T>(IEventBusSubscriber subcriber, Action<T> message)
+        IDisposable On<T>(IEventBusSubscriber subcriber, Func<T, Task> message)
             where T : IEventMessage;
 
-        void Publish<T>(T message)
+        Task PublishAsync<T>(T message)
             where T : IEventMessage;
     }
     internal class EventBus : IEventBus
     {
         private readonly Dictionary<Type, List<EventSubscriber>> _events = new();
         
-        public IDisposable On<T>(IEventBusSubscriber subcriber, Action<T> message)
+        public IDisposable On<T>(IEventBusSubscriber subcriber, Func<T, Task> message)
             where T : IEventMessage
         {
             var eventSubsriber = new EventSubscriber(typeof(T), subcriber, (sub) =>
@@ -47,15 +48,13 @@ namespace SoundMeter.UI.Services
             return eventSubsriber;
         }
 
-        public void Publish<T>(T message)
+        public async Task PublishAsync<T>(T message)
             where T : IEventMessage
         {
             if (_events.TryGetValue(typeof(T),out var subscribers))
             {
-                foreach (var subscriber in subscribers)
-                {
-                    subscriber?.Action(message);
-                }
+                var tasks = subscribers.Select(x => x.Action(message));
+                await Task.WhenAll(tasks);
             }
         }
 
@@ -68,9 +67,9 @@ namespace SoundMeter.UI.Services
 
             public Action<EventSubscriber> DisposeCallback { get; }
 
-            public Action<object> Action { get; }
+            public Func<object, Task> Action { get; }
 
-            public EventSubscriber(Type messageType, IEventBusSubscriber subscriber, Action<EventSubscriber> disposeCallback, Action<object> action)
+            public EventSubscriber(Type messageType, IEventBusSubscriber subscriber, Action<EventSubscriber> disposeCallback, Func<object, Task> action)
             {
                 MessageType = messageType;
                 Subscriber = subscriber;

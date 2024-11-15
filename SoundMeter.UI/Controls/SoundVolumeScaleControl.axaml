@@ -41,8 +41,10 @@
 							</Grid>
 
 							<Grid Grid.Column="1" RowDefinitions="4*, 6*" Margin="0,7,0,0">
-								<Rectangle Fill="#b05c4e" Width="30"/>
-								<Rectangle Grid.Row="1" Fill="White" Width="32"/>
+								<Rectangle x:Name="HighVolumeContainer" Fill="#b05c4e" Width="30" VerticalAlignment="Bottom" Height="{Binding HighVolume}">
+								</Rectangle>
+								<Rectangle x:Name="NormalVolumeContainer" Grid.Row="1" Fill="White" Width="32" Height="{Binding NormalVolume}" VerticalAlignment="Bottom">
+								</Rectangle>
 							</Grid>
 
 
@@ -61,7 +63,13 @@
 							</Grid>
 							<!--Arrow-->
 								<Canvas Grid.Column="2" Width="15" x:Name="VolumeContainer">
-									<Path Fill="White" Data="M 20 3 L 4 10 L 20 17 Z" Canvas.Top="{Binding CurrentVolume}"/>
+									<Path Fill="White" Data="M 20 3 L 4 10 L 20 17 Z" Canvas.Top="{Binding CurrentVolume}">
+										<Path.Transitions>
+											<Transitions>
+												<DoubleTransition Property="Canvas.Top" Duration="0:0:.2"/>
+											</Transitions>
+										</Path.Transitions>
+									</Path>
 								</Canvas>
 						</Grid>
 						<Grid Grid.Row="1" RowDefinitions="Auto, Auto" Margin="0,7,0,0">

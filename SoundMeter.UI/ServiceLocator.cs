@@ -40,6 +40,7 @@ namespace SoundMeter.UI
             serviceCollection.AddSingleton<HeaderViewModel>();
             serviceCollection.AddSingleton<SoundVolumeScaleViewModel>();
             serviceCollection.AddSingleton<FooterViewModel>();
+            serviceCollection.AddSingleton<LoundesInfoControlViewModel>();
             serviceCollection.AddSingleton<IEventBus, EventBus>();
             serviceCollection.AddSingleton<ILoudnesService, LoudnesService>();
             _serviceProvider = serviceCollection.BuildServiceProvider();

@@ -47,7 +47,7 @@ namespace SoundMeter.Core.Services
             _currentStream?.Dispose();
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = new CancellationTokenSource();
-            _currentStream = await _soundIoClient.CreateDeviceStreamAsync(deviceId, .6);
+            _currentStream = await _soundIoClient.CreateDeviceStreamAsync(deviceId, .2);
             var sampleRate = _currentStream.SampleRate;
             _currentStream.ReadCallback = (min, max) => Process(min, max, sampleRate, _cancellationTokenSource.Token);
             
@@ -75,7 +75,7 @@ namespace SoundMeter.Core.Services
                 int frame_count = frames_left;
 
                 var areas = _currentStream?.BeginRead(ref frame_count);
-                var bufferlength = frame_count / 2;
+                var bufferlength = frame_count;
                 var buffer = _arrayPoolFactory.Value.Rent(bufferlength);
                 if (areas.HasValue && !areas.Value.IsEmpty)
                 {
