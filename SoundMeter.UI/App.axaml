@@ -20,6 +20,7 @@
 		<StyleInclude Source="/Controls/SoundVolumeScaleControl.axaml"/>
 		<StyleInclude Source="/Controls/FooterControl.axaml"/>
 		<StyleInclude Source="/Controls/LoundesInfoControl.axaml"/>
+		<StyleInclude Source="/Controls/AnimatedScaleControl.axaml"/>
         <FluentTheme />
     </Application.Styles>
 </Application>

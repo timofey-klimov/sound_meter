@@ -1,11 +1,8 @@
 ﻿using Avalonia.Threading;
-using NWaves.Effects.Stereo;
 using SoundMeter.UI.Messages;
 using SoundMeter.UI.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SoundMeter.UI.ViewModels
