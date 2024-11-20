@@ -15,8 +15,6 @@
 					ColumnDefinitions="Auto, Auto, *, Auto, Auto"
 					Height="50"
 				>
-					<controls:SvgButton Width="50" SvgPath="/Assets/monitor-svgrepo-com.svg"/>
-					<controls:SvgButton Width="50" Grid.Column="1" SvgPath="/Assets/lock-svgrepo-com.svg"/>
 					<StackPanel
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"
@@ -25,8 +23,6 @@
 						<Label FontWeight="Bold" Content="{Binding BoldTitle}"/>
 						<Label Content="{Binding AppName}"/>
 					</StackPanel>
-					<controls:SvgButton Width="50" Grid.Column="3" SvgPath="/Assets/arrow-up-right-from-square-svgrepo-com.svg"/>
-					<controls:SvgButton Width="50" Grid.Column="4" SvgPath="/Assets/gear-svgrepo-com.svg"/>
 				</Grid>
 			</ControlTemplate>
 		</Setter>

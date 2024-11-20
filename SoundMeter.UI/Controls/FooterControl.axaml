@@ -20,15 +20,7 @@
 						Command="{Binding ToggleChannelConfigurationCommand}"
 						controls:AnimatedPopup.WithName="AudioInterfaceSelectorPopup"
 						Content="{Binding SelectedAudioInterfaceButtonName}"
-				/>
-
-					<Button
-						Command="{Binding RefreshCommand}"
-						FontSize="14"
-						Grid.Column="1"
-						Theme="{StaticResource DarkStyleButtonTheme}">
-						Refresh
-					</Button>
+					/>
 				</Grid>
 			</ControlTemplate>
 		</Setter>
