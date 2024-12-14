@@ -49,9 +49,9 @@ namespace SoundMeter.Core.Services
             _devices = new Dictionary<int, SoundIODevice>();
         }
 
-        public async Task<SoundIOInStream> CreateDeviceStreamAsync(int deviceId, double latency)
+        public Task<SoundIOInStream> CreateDeviceStreamAsync(int deviceId, double latency)
         {
-            return await Task.Run(() =>
+            return Task.Run(() =>
             {
                 var device = _devices[deviceId];
                 var fmt = prioritized_formats.FirstOrDefault(device.SupportsFormat);
@@ -81,9 +81,9 @@ namespace SoundMeter.Core.Services
             GC.SuppressFinalize(this);
         }
 
-        private async Task<Dictionary<int, SoundIODevice>> CreateDeviceTableAsync()
+        private Task<Dictionary<int, SoundIODevice>> CreateDeviceTableAsync()
         {
-            return await Task.Run(() =>
+            return Task.Run(() =>
             {
                 _soundIo.FlushEvents();
                 var dict = new Dictionary<int, SoundIODevice>();

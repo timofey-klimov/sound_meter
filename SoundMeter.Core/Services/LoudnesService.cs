@@ -5,16 +5,21 @@ namespace SoundMeter.Core.Services
 {
     public interface ILoudnesService
     {
-        double Calculate(ArraySegment<float> bytes, int sampleRate);
+        double Calculate(IEnumerable<float> bytes, int sampleRate);
     }
     public class LoudnesService : ILoudnesService
     {
-        public double Calculate(ArraySegment<float> bytes, int sampleRate)
+        public double Calculate(IEnumerable<float> bytes, int sampleRate)
         {
-            var signal = new DiscreteSignal(sampleRate, bytes.Count);
-            for (int i = 0; i < bytes.Count; i++)
+            var length = 0;
+            if(!bytes.TryGetNonEnumeratedCount(out length))
             {
-                signal[i] = bytes[i];
+                length = bytes.Count();
+            }
+            var signal = new DiscreteSignal(sampleRate, length);
+            for (int i = 0; i < length; i++)
+            {
+                signal[i] = bytes.ElementAt(i);
             }
 
            return Math.Round(Scale.ToDecibel(signal.Rms()), 2);

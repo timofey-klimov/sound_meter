@@ -79,17 +79,19 @@ namespace SoundMeter.Core.Services
                 var buffer = _arrayPoolFactory.Value.Rent(bufferlength);
                 if (areas.HasValue && !areas.Value.IsEmpty)
                 {
+                    var area = areas.Value.GetArea(0);
                     nint copySize = _currentStream!.BytesPerSample;
                     uint counter = 0;
                     for (int frame = 0; frame < frame_count; frame += 1)
                     {
                         if (token.IsCancellationRequested)
                             break;
-                        var area = areas.Value.GetArea(0);
                         var data = Unsafe.ReadUnaligned<float>((void*)area.Pointer);
                         if (data > 0)
-                        buffer[counter] = data;    
-                        area.Pointer += copySize;
+                        {
+                            buffer[counter] = data;    
+                            area.Pointer += copySize;
+                        }
 
                         if (counter == bufferlength - 1)
                         {

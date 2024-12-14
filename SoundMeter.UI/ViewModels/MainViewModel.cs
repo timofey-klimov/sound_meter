@@ -44,18 +44,22 @@ namespace SoundMeter.UI.ViewModels
             _loudnesService = loundnesService;
             _eventBus = eventBus;
             SelectAudioInterfaceCommand = new Command(SelectAudioInterface);
-            _eventBus.On<RefreshDevicesMessage>(this, async (m) =>
-            {
-                await LoadAudioInterfaces(true);
-            });
+            
             LoadAudioInterfaces();
             ProcessMessages();
         }
 
-        private async Task LoadAudioInterfaces(bool resetCache = false)
+        private Task LoadAudioInterfaces()
         {
-            var audioInterfaces = await _audioInterfaceService.GetAudioInterfacesAsync(resetCache);
-            AudioInterfaces = new ObservableCollection<AudioInterface>(audioInterfaces.ToList());
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var audioInterfaces = (await _audioInterfaceService.GetAudioInterfacesAsync(true)).ToList();
+                    AudioInterfaces = new ObservableCollection<AudioInterface>(audioInterfaces);
+                    await Task.Delay(1000);
+                }
+            });
         }
 
         private void SelectAudioInterface(object audioInterface)
