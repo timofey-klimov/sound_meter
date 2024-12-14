@@ -88,7 +88,10 @@ namespace SoundMeter.Core.Services
                     for (int frame = 0; frame < frame_count; frame += 1)
                     {
                         if (token.IsCancellationRequested)
+                        {
+                            frames_left = -1;
                             break;
+                        }
                         var area = areas.Value.GetArea(0);
                         var data = Unsafe.ReadUnaligned<float>((void*)area.Pointer);
                         
