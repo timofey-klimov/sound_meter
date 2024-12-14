@@ -127,8 +127,8 @@ namespace SoundMeter.UI.Controls
             {
                 var nextState = popupCommand.State switch
                 {
-                    PopupState.Open => Name == popupCommand.Name ? true : false,
-                    PopupState.Close => Name == popupCommand.Name ? false : true
+                    PopupState.Open => Name == popupCommand.Name,
+                    PopupState.Close => !(Name == popupCommand.Name)
                 };
                 IsOpen = nextState;
             };

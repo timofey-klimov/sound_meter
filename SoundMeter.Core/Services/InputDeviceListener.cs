@@ -34,6 +34,7 @@ namespace SoundMeter.Core.Services
         private Lazy<ArrayPool<float>> _arrayPoolFactory = new Lazy<ArrayPool<float>>(() => ArrayPool<float>.Shared);
         private CancellationTokenSource? _cancellationTokenSource;
         public ChannelReader<InputDeviceStreamData> Processor => _channel.Reader;
+        private AutoResetEvent _autoResetEvent = new AutoResetEvent(true);
 
         public InputDeviceService(ISoundIoClient soundIoClient)
         {
@@ -49,7 +50,11 @@ namespace SoundMeter.Core.Services
             _cancellationTokenSource = new CancellationTokenSource();
             _currentStream = await _soundIoClient.CreateDeviceStreamAsync(deviceId, .2);
             var sampleRate = _currentStream.SampleRate;
-            _currentStream.ReadCallback = (min, max) => Process(min, max, sampleRate, _cancellationTokenSource.Token);
+            _currentStream.ReadCallback = (min, max) =>
+            {
+                Process(min, max, sampleRate, _cancellationTokenSource.Token);
+                _autoResetEvent.WaitOne();
+            }; 
             
             _currentStream.Open();
             _currentStream.Start();
@@ -58,8 +63,7 @@ namespace SoundMeter.Core.Services
             {
                 var task = new Task(() =>
                 {
-                    while (true)
-                        _soundIoClient.WaitEvents();
+                    _soundIoClient.WaitEvents();
                 }, TaskCreationOptions.LongRunning);
                 task.Start();
             }
@@ -79,19 +83,17 @@ namespace SoundMeter.Core.Services
                 var buffer = _arrayPoolFactory.Value.Rent(bufferlength);
                 if (areas.HasValue && !areas.Value.IsEmpty)
                 {
-                    var area = areas.Value.GetArea(0);
                     nint copySize = _currentStream!.BytesPerSample;
                     uint counter = 0;
                     for (int frame = 0; frame < frame_count; frame += 1)
                     {
                         if (token.IsCancellationRequested)
                             break;
+                        var area = areas.Value.GetArea(0);
                         var data = Unsafe.ReadUnaligned<float>((void*)area.Pointer);
-                        if (data > 0)
-                        {
-                            buffer[counter] = data;    
-                            area.Pointer += copySize;
-                        }
+                        
+                        buffer[counter] = data;    
+                        area.Pointer += copySize;
 
                         if (counter == bufferlength - 1)
                         {
@@ -108,6 +110,7 @@ namespace SoundMeter.Core.Services
                     _currentStream.EndRead();
                 }
             }
+            _autoResetEvent.Set();
         }
     }
 }

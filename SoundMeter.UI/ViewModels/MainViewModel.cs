@@ -49,17 +49,10 @@ namespace SoundMeter.UI.ViewModels
             ProcessMessages();
         }
 
-        private Task LoadAudioInterfaces()
+        private async Task LoadAudioInterfaces()
         {
-            return Task.Run(async () =>
-            {
-                while (true)
-                {
-                    var audioInterfaces = (await _audioInterfaceService.GetAudioInterfacesAsync(true)).ToList();
-                    AudioInterfaces = new ObservableCollection<AudioInterface>(audioInterfaces);
-                    await Task.Delay(1000);
-                }
-            });
+            var audioInterfaces = (await _audioInterfaceService.GetAudioInterfacesAsync(true)).ToList();
+            AudioInterfaces = new ObservableCollection<AudioInterface>(audioInterfaces);
         }
 
         private void SelectAudioInterface(object audioInterface)
